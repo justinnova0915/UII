@@ -13,7 +13,9 @@ include("${libs}/add_txlib.cmake")
 # TXLib
 tx_add_txlib(
 	LOCAL_DIR "$ENV{HOME}/Programming/dev/libs/TXLib"
+        VERSION refactor/lib-structure
 )
+
 set(TXLib_SOURCE_DIR ${TXLib_SOURCE_DIR} PARENT_SCOPE)
 set(CMakeUtils "${TXLib_SOURCE_DIR}/cmake")
 
