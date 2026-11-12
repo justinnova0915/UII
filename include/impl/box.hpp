@@ -12,15 +12,17 @@ private:
     SDL_FRect m_rect = {};
     SDL_Color m_color = {};
 
+    Renderer& m_renderer;
+
 public:
-    Box(SDL_FRect rect_, SDL_Color color_) 
-        : m_rect(rect_), m_color(color_) {}
+    Box(SDL_FRect rect_, SDL_Color color_, Renderer& r) 
+        : m_rect(rect_), m_color(color_), m_renderer(r) {}
 
     void setRect(SDL_FRect r) { m_rect = r; }
     SDL_FRect getRect() const { return m_rect; }
 
-    void render(Renderer r) {
-        r.renderRect(m_rect, m_color);
+    void render() {
+        m_renderer.renderRect(m_rect, m_color);
     }
 };
 } 

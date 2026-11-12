@@ -5,6 +5,10 @@ set(CMAKE_VERIFY_INTERFACE_HEADER_SETS ON)
 
 # dependencies
 
+find_package(SDL3 QUIET)
+find_package(SDL3_mixer QUIET)
+find_package(SDL3_ttf QUIET)
+
 set(libs "${CMAKE_CURRENT_SOURCE_DIR}/libs")
 set(src "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
@@ -35,6 +39,9 @@ target_compile_features(UII PUBLIC cxx_std_23)
 # dependencies
 target_link_libraries(UII PUBLIC
 	TXLib
+	SDL3::SDL3
+    SDL3_mixer::SDL3_mixer
+    SDL3_ttf::SDL3_ttf
 )
 
 # optimization
