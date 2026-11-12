@@ -7,8 +7,11 @@
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
-
 #include <SDL3_ttf/SDL_ttf.h>
+
+#include <exception>
+#include <optional>
+#include <stdexcept>
 
 namespace uii {
 
@@ -25,7 +28,8 @@ public:
         : WINDOW_WIDTH(WINDOW_WIDTH_), WINDOW_HEIGHT(WINDOW_HEIGHT_)
     {   
         if (!SDL_CreateWindowAndRenderer("game", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &m_window, &m_renderer)) {
-            SDL_Log("SDL Window Creation Error: %s", SDL_GetError());
+            //SDL_Log("SDL Window Creation Error: %s", SDL_GetError());
+            throw std::runtime_error("Failed to create window! oops");
         }
 
         SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
@@ -45,8 +49,8 @@ public:
         SDL_SetRenderDrawColor(m_renderer, c.r, c.g, c.b, c.a);
     }
 
-    void renderText(TTF_Text* text, float x, float y) {
-        TTF_DrawRendererText(text, x, y);
+    void renderText(TTF_Text* text, SDL_FPoint pos) {
+        TTF_DrawRendererText(text, pos.x, pos.y);
     }
 };
 }
