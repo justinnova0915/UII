@@ -9,10 +9,10 @@
 #include <unordered_map>
 #include <vector>
 #include <filesystem>
-#include "renderer.hpp"
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
+
 #include <SDL3_ttf/SDL_ttf.h>
+
+#include "renderer.hpp"
 
 namespace uii {
 
@@ -20,7 +20,6 @@ struct Text {
     TTF_Text* m_text;
 
     SDL_FPoint m_pos;
-    SDL_Color m_color;
 };
 
 //Wrapper for SDL3_ttf
@@ -38,7 +37,7 @@ public:
         : m_renderer(renderer_)
     {
         if (!TTF_Init()) {
-            //TODO: Daddy Jerry please teach exceptions
+            throw std::runtime_error("TTF Init Error!");
         }
 
         m_engine = TTF_CreateRendererTextEngine(m_renderer.getSDLRenderer());
@@ -48,7 +47,7 @@ public:
     void createFont(std::string handle, std::string path, float size) {
 
         if (!std::filesystem::exists(path)) {
-            //TODO: Daddy Jerry please teach exceptions
+            throw std::runtime_error("Text: Specified path does not exist!");
         }
 
         m_fonts[handle] = TTF_OpenFont(path.c_str(), size);
@@ -57,7 +56,7 @@ public:
     void changeFontSize(std::string handle, float size) {
         
         if (m_fonts.find(handle) == m_fonts.end()) {
-            //TODO: Daddy Jerry please teach exceptions
+            throw std::runtime_error("Text: Specified font does not exist!");
         }
 
         TTF_SetFontSize(m_fonts[handle], size);
@@ -65,23 +64,21 @@ public:
 
     int createText(std::string handle, std::string text, SDL_FPoint pos, SDL_Color color) {
         if (m_fonts.find(handle) == m_fonts.end()) {
-            //TODO: Daddy Jerry please teach exceptions
+            throw std::runtime_error("Text: Specified font does not exist!");
         }
 
         Text t = Text{
             .m_text = TTF_CreateText(m_engine, m_fonts[handle], text.c_str(), 0),
-            .m_pos = pos,
-            .m_color = color
+            .m_pos = pos
         };
 
         m_texts.push_back(t);
         return m_texts.size()-1;
     }
 
-    int changeColor(SDL_Color color, int ID) {
-
+    void changeColor(SDL_Color color, int ID) {
         if (ID >= m_texts.size()) {
-            throw std::runtime_error("Text: Specified font does not exist!");
+            throw std::runtime_error("Text: Specified text does not exist!");
         }
 
         TTF_SetTextColor(m_texts[ID].m_text, color.r, color.g, color.b, color.a);
