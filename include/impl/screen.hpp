@@ -14,18 +14,14 @@
 namespace uii {
 class Screen {
 private:
-    using element = std::variant<Box, Text>;
 
     std::vector<element> m_elements;
     Renderer* m_renderer;
-
+    
 public:
 
     Screen(std::vector<element> elements_, Renderer* renderer_)
-        : m_elements(elements_), m_renderer(renderer_)
-    {
-
-    }
+        : m_elements(elements_), m_renderer(renderer_) { }
 
     void addElement(element e) {
         m_elements.push_back(e);
@@ -33,7 +29,6 @@ public:
 
     void render() {
         for (element e: m_elements) {
-            std::visit<element>(e, )
         }
     }
 };
