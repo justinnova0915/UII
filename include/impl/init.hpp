@@ -12,9 +12,6 @@ inline void init() {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL Error: %s", SDL_GetError());
     }
-
-    Renderer renderer(1920, 1080);
-    // Box box({100, 100, 500, 500}, {255, 255, 255, 255}, renderer);
 }
 }
 

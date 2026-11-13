@@ -4,6 +4,7 @@
 
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -75,6 +76,15 @@ public:
 
         m_texts.push_back(t);
         return m_texts.size()-1;
+    }
+
+    int changeColor(SDL_Color color, int ID) {
+
+        if (ID >= m_texts.size()) {
+            throw std::runtime_error("Text: Specified font does not exist!");
+        }
+
+        TTF_SetTextColor(m_texts[ID].m_text, color.r, color.g, color.b, color.a);
     }
 
     void render() {
