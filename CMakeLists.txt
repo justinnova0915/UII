@@ -6,8 +6,32 @@ set(CMAKE_VERIFY_INTERFACE_HEADER_SETS ON)
 # dependencies
 
 find_package(SDL3 QUIET)
-find_package(SDL3_mixer QUIET)
 find_package(SDL3_ttf QUIET)
+
+if(NOT SDL3_FOUND)
+    message(STATUS "SDL3 not found locally; fetching from GitHub...")
+    include(FetchContent)
+    FetchContent_Declare(
+        SDL3
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG        main
+        GIT_SHALLOW    TRUE
+        GIT_PROGRESS   TRUE
+    )
+    FetchContent_MakeAvailable(SDL3)
+endif()
+
+if(NOT SDL3_ttf_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+        SDL_ttf
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
+        GIT_TAG        main
+        GIT_SHALLOW    TRUE
+        GIT_PROGRESS   TRUE
+    )
+    FetchContent_MakeAvailable(SDL_ttf)
+endif()
 
 set(libs "${CMAKE_CURRENT_SOURCE_DIR}/libs")
 set(src "${CMAKE_CURRENT_SOURCE_DIR}/src")
