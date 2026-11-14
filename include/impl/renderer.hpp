@@ -12,7 +12,6 @@
 #include <stdexcept>
 
 namespace uii {
-
 class Renderer {
 private:
     SDL_Renderer* m_renderer;
