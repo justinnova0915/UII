@@ -4,31 +4,34 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include <variant>
 #include <vector>
 
-#include "box.hpp"
-#include "text.hpp"
+#include "element.hpp"
 #include "renderer.hpp"
 
 namespace uii {
 class Screen {
 private:
+    std::vector<BaseElement*> m_elements;
 
-    std::vector<element> m_elements;
-    Renderer* m_renderer;
-    
 public:
 
-    Screen(std::vector<element> elements_, Renderer* renderer_)
-        : m_elements(elements_), m_renderer(renderer_) { }
+    Screen(std::vector<BaseElement*> elements_)
+        : m_elements(elements_) { }
 
-    void addElement(element e) {
+    void addElement(BaseElement* e) {
         m_elements.push_back(e);
     }
 
-    void render() {
-        for (element e: m_elements) {
+    void render(Renderer& renderer) {
+        for (BaseElement* e: m_elements) {
+            e->render(renderer);
+        }
+    }
+
+    void update() {
+        for (BaseElement* e: m_elements) {
+            e->update();
         }
     }
 };

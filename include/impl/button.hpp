@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <SDL3/SDL_rect.h>
 #include <functional>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -9,17 +10,21 @@
 #include "renderer.hpp"
 #include "box.hpp"
 #include "text.hpp"
+#include "element.hpp"
 
 namespace uii {
-class Button {
+class Button: public BaseElement{
 private:
     Box m_box;
-    Text m_text;
+    int m_textID;
 
+    FontManager& m_textEngine;
     std::function<void()> m_callBack;
 public:
-    Button(Box box_, Text text_)
-        : m_box(box_), m_text(text_) { }
+    Button(Box box_, std::string text_, FontManager& textEngine_)
+        : m_box(box_), m_textEngine(textEngine_) {
+            m_textEngine.createText( fontHandle, std::string text, SDL_FPoint pos, SDL_Color color)
+        }
 
     void onPressed() {
         m_callBack();
@@ -29,8 +34,15 @@ public:
         m_callBack = callback;
     }
 
-    void render() {
-        renderer
+    void update(SDL_FPoint mouse) override {
+
+    }
+
+
+
+    void render() override {
+        m_box.render();
+        m_textEngine.render()
     }
 
 };
