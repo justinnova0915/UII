@@ -81,8 +81,8 @@ public:
 		fontManager.emplace(renderer);
 	}
 	static void quit() {
-		TTF_Quit();
 		fontManager.reset();
+		TTF_Quit();
 	}
 
 public:
