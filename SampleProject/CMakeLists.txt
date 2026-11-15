@@ -43,8 +43,8 @@ set_target_properties(TXProject PROPERTIES
 )
 
 # executable environment
-#include("${CMakeUtils}/link_dir_to_bin.cmake")
-#tx_link_dir_to_bin(TXProject "${CMAKE_SOURCE_DIR}/assets")
+include("${CMakeUtils}/link_dir_to_bin.cmake")
+tx_link_dir_to_bin(TXProject "${CMAKE_SOURCE_DIR}/assets")
 
 install(TARGETS TXProject
     RUNTIME DESTINATION bin

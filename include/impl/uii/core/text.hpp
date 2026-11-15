@@ -71,8 +71,19 @@ private:
 	};
 
 private:
-	static std::optional<FontManager> fontManager;
+	inline static std::optional<FontManager> fontManager;
 	TTF_Text* m_text;
+
+public:
+	static void init(SDL_Renderer* renderer) {
+		if (!TTF_Init()) throw std::runtime_error("Failed to init TTF.");
+		// FontManager contructor
+		fontManager.emplace(renderer);
+	}
+	static void quit() {
+		TTF_Quit();
+		fontManager.reset();
+	}
 
 public:
 	Text(std::string fileName, float size, std::string text)
@@ -113,12 +124,6 @@ public:
 	void render(SDL_FPoint pos) {
 		TTF_DrawRendererText(m_text, pos.x, pos.y);
 	}
-
-	static void init(SDL_Renderer* renderer) {
-		if (!TTF_Init()) throw std::runtime_error("Failed to init TTF.");
-		// FontManager contructor
-		fontManager.emplace(renderer);
-	}
 };
 
 class Label : public WidgetBase {
@@ -135,7 +140,7 @@ public:
 	// 		m_text.setColor(color);
 	// 	}
 
-	void render(Renderer& renderer) override {
+	void render(Renderer&) override {
 		m_text.render(m_rect.pos());
 	}
 };
