@@ -37,7 +37,9 @@ set(libs "${CMAKE_CURRENT_SOURCE_DIR}/libs")
 set(src "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 include("${libs}/add_txlib.cmake")
-include("${CMAKE_CURRENT_SOURCE_DIR}/txlib-path.cmake")
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/txlib-path.cmake")
+	include("${CMAKE_CURRENT_SOURCE_DIR}/txlib-path.cmake")
+endif()
 
 # TXLib
 tx_add_txlib(
@@ -64,7 +66,6 @@ target_compile_features(UII PUBLIC cxx_std_23)
 target_link_libraries(UII PUBLIC
 	TXLib
 	SDL3::SDL3
-    SDL3_mixer::SDL3_mixer
     SDL3_ttf::SDL3_ttf
 )
 
