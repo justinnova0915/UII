@@ -104,6 +104,12 @@ public:
 		TTF_SetTextFont(m_text, fontManager->font(fileName, size));
 	}
 
+	SDL_FPoint getSize() {
+		int w, h;
+		TTF_GetTextSize(m_text, &w, &h);
+		return { static_cast<float>(w), static_cast<float>(h) };
+	}
+
 	void render(SDL_FPoint pos) {
 		TTF_DrawRendererText(m_text, pos.x, pos.y);
 	}
@@ -115,23 +121,22 @@ public:
 	}
 };
 
-// class Label : public WidgetBase {
-// private:
-// 	Text m_text;
-// 	SDL_FPoint m_pos;
+class Label : public WidgetBase {
+private:
+	Text m_text;
 
-// public:
-// 	Label(std::string text_, SDL_Color color_, SDL_FPoint pos_, std::string fontFile_, float size_)
-// 	    : m_text(Text(fontFile_, size_, text_)), m_pos(pos_) {
-// 		m_text.setColor(color_);
-// 	}
+public:
+	Label(Rect rect_, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
+	    : WidgetBase(rect_), m_text(Text(fontFile_, size_, text_)) {
+		m_text.setColor(color_);
+	}
 
 // 	void changeColor(SDL_Color color) {
 // 		m_text.setColor(color);
 // 	}
 
-// 	void render(Renderer& renderer) override {
-// 		m_text.render(m_pos);
-// 	}
-// };
+	void render(Renderer& renderer) override {
+		m_text.render(m_rect.getPos());
+	}
+};
 } // namespace uii
