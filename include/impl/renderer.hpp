@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "helper.hpp"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_pixels.h>
@@ -36,17 +37,14 @@ public:
 		return m_renderer;
 	}
 
-	void renderRect(SDL_FRect rect, SDL_Color c) {
+	void renderRect(Rect rect_, SDL_Color c) {
 		setRenderDrawColor(c);
+		SDL_FRect rect = rect_.getRect();
 		SDL_RenderRect(m_renderer, &rect);
 	}
 
 	void setRenderDrawColor(SDL_Color c) {
 		SDL_SetRenderDrawColor(m_renderer, c.r, c.g, c.b, c.a);
-	}
-
-	void renderText(TTF_Text* text, SDL_FPoint pos) {
-		TTF_DrawRendererText(text, pos.x, pos.y);
 	}
 };
 } // namespace uii

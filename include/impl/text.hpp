@@ -15,7 +15,6 @@
 #include <cstdint>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <unordered_map>
 #include <filesystem>
 #include <utility>
@@ -105,6 +104,12 @@ public:
 		TTF_SetTextFont(m_text, fontManager->font(fileName, size));
 	}
 
+	SDL_FPoint getSize() {
+		int w, h;
+		TTF_GetTextSize(m_text, &w, &h);
+		return { static_cast<float>(w), static_cast<float>(h) };
+	}
+
 	void render(SDL_FPoint pos) {
 		TTF_DrawRendererText(m_text, pos.x, pos.y);
 	}
@@ -121,7 +126,7 @@ private:
 	Text m_text;
 
 public:
-	Label(SDL_FRect rect_, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
+	Label(Rect rect_, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
 	    : WidgetBase(rect_), m_text(Text(fontFile_, size_, text_)) {
 		m_text.setColor(color_);
 	}
@@ -131,7 +136,7 @@ public:
 	}
 
 	void render(Renderer& renderer) override {
-		m_text.render({ m_rect.x, m_rect.y });
+		m_text.render(m_rect.getPos());
 	}
 };
 } // namespace uii

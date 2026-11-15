@@ -7,15 +7,16 @@
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
 
+#include "helper.hpp"
 #include "renderer.hpp"
 
 namespace uii {
 class WidgetBase {
 protected:
-	SDL_FRect m_rect;
+	Rect m_rect;
 
 public:
-	WidgetBase(SDL_FRect rect_)
+	WidgetBase(Rect rect_)
 	    : m_rect(rect_) {}
 
 	virtual void render(Renderer& renderer) {

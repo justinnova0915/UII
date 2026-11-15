@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "helper.hpp"
 #include "renderer.hpp"
 #include "text.hpp"
 #include "widget_base.hpp"
@@ -21,7 +22,7 @@ private:
 	std::function<void()> m_callBack;
 
 public:
-	ButtonWidgetBase(SDL_FRect rect_, std::function<void()> callback_)
+	ButtonWidgetBase(Rect rect_, std::function<void()> callback_)
 	    : WidgetBase(rect_), m_callBack(callback_) {}
 
 	void onPressed() {
@@ -35,6 +36,18 @@ public:
 
 class ButtonWidget : public ButtonWidgetBase {};
 
-class TextButtonWidget : public ButtonWidgetBase {};
+class TextButtonWidget : public ButtonWidgetBase {
+private:
+	Text text;
+
+public:
+	TextButtonWidget(Rect rect_, std::function<void()> callback_, std::string text_, std::string fontFile_, float textSize_)
+	    : ButtonWidgetBase(rect_, callback_), text(fontFile_, textSize_, text_) {}
+
+	void render(Renderer& renderer) override {
+		WidgetBase::render(renderer);
+		renderer.renderText(text., m_rect)
+	}
+};
 
 } // namespace uii
