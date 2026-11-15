@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include "renderer.hpp"
-#include "text.hpp"
-#include "widget_base.hpp"
+#include "impl/uii/core/core.hpp"
 
 #include <SDL3/SDL_rect.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -12,7 +10,6 @@
 #include <SDL3/SDL_main.h>
 
 #include <functional>
-#include <string>
 
 
 namespace uii {

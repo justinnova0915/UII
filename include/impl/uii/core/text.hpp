@@ -15,7 +15,6 @@
 #include <cstdint>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <unordered_map>
 #include <filesystem>
 #include <utility>
@@ -116,23 +115,23 @@ public:
 	}
 };
 
-class Label : public WidgetBase {
-private:
-	Text m_text;
-	SDL_FPoint m_pos;
+// class Label : public WidgetBase {
+// private:
+// 	Text m_text;
+// 	SDL_FPoint m_pos;
 
-public:
-	Label(std::string text_, SDL_Color color_, SDL_FPoint pos_, std::string fontFile_, float size_)
-	    : m_text(Text(fontFile_, size_, text_)), m_pos(pos_) {
-		m_text.setColor(color_);
-	}
+// public:
+// 	Label(std::string text_, SDL_Color color_, SDL_FPoint pos_, std::string fontFile_, float size_)
+// 	    : m_text(Text(fontFile_, size_, text_)), m_pos(pos_) {
+// 		m_text.setColor(color_);
+// 	}
 
-	void changeColor(SDL_Color color) {
-		m_text.setColor(color);
-	}
+// 	void changeColor(SDL_Color color) {
+// 		m_text.setColor(color);
+// 	}
 
-	void render(Renderer& renderer) override {
-		m_text.render(m_pos);
-	}
-};
+// 	void render(Renderer& renderer) override {
+// 		m_text.render(m_pos);
+// 	}
+// };
 } // namespace uii

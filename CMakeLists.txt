@@ -53,6 +53,14 @@ set(CMakeUtils "${TXLib_SOURCE_DIR}/cmake")
 add_library(UII STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/uii/uii.h"
 
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/core/core.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/core/renderer.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/core/text.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/core/widget_base.hpp"
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/widgets/widgets.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/widgets/button.hpp"
+
 	"${CMAKE_CURRENT_SOURCE_DIR}/src/hello.cpp"
 )
 target_include_directories(UII PUBLIC

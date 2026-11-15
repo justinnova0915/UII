@@ -1,13 +1,14 @@
 // Copyright (c) 2026 UII. Licensed under the GPL-3.0 License.
 
 #pragma once
+#include "impl/uii/core/renderer.hpp"
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
 
-#include "renderer.hpp"
 
 namespace uii {
 class WidgetBase {
