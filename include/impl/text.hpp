@@ -119,11 +119,10 @@ public:
 class Label : public WidgetBase {
 private:
 	Text m_text;
-	SDL_FPoint m_pos;
 
 public:
-	Label(std::string text_, SDL_Color color_, SDL_FPoint pos_, std::string fontFile_, float size_)
-	    : m_text(Text(fontFile_, size_, text_)), m_pos(pos_) {
+	Label(SDL_FRect rect_, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
+	    : WidgetBase(rect_), m_text(Text(fontFile_, size_, text_)) {
 		m_text.setColor(color_);
 	}
 
@@ -132,7 +131,7 @@ public:
 	}
 
 	void render(Renderer& renderer) override {
-		m_text.render(m_pos);
+		m_text.render({ m_rect.x, m_rect.y });
 	}
 };
 } // namespace uii
