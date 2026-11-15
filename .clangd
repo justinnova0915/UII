@@ -9,6 +9,7 @@ CompileFlags:
     - -Wall
     - -Wextra
     - -fdelayed-template-parsing
+    - -I../../include
 InlayHints:
   Enabled: Yes
   DeducedTypes: No       # Stops crashes on decltype(auto) / auto returns
