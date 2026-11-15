@@ -1,9 +1,5 @@
 // Copyright (c) 2026 UII. Licensed under the GPL-3.0 License.
 
-#include "impl/io_file.hpp"
-#include "impl/uii/core/renderer.hpp"
-#include "impl/uii/core/text.hpp"
-#include "impl/uii/infrastructure/geometry.hpp"
 #include "uii/uii.h"
 
 #include "tx/resource.h"
@@ -14,8 +10,8 @@ int main() {
 		uii::Renderer rr(1600, 900);
 		uii::Text::init(rr.getSDLRenderer());
 
-		uii::Label l(uii::FRect(0, 0, 1600, 900), "Hello", { 255, 255, 255, 255 },
-		             tx::getExeDir() / "assets/JetBrainsMono-Regular.ttf", 64);
+		uii::LabelWidget l(uii::FRect(0, 0, 1600, 900), "Hello", { 255, 255, 255, 255 },
+		                   tx::getExeDir() / "assets/JetBrainsMono-Regular.ttf", 64);
 
 
 		bool running = true;

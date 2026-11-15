@@ -3,8 +3,6 @@
 #pragma once
 #include "impl/uii/core/core.hpp"
 #include "impl/uii/widgets/widgets.hpp"
-#include <SDL3/SDL_init.h>
-#include <SDL3/SDL_oldnames.h>
 
 namespace uii {
 inline void init() {

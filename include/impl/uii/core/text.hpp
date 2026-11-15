@@ -2,9 +2,6 @@
 
 #pragma once
 
-#include "renderer.hpp"
-#include "widget_base.hpp"
-
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_pixels.h>
@@ -13,6 +10,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include <cstdint>
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -30,8 +28,15 @@ private:
 	class FontManager {
 	private:
 		struct FontKeyHash {
+			using is_transparent = void;
 			std::size_t operator()(const std::pair<std::string, float>& k) const noexcept {
 				std::size_t h1 = std::hash<std::string>{}(k.first);
+				std::size_t h2 = std::hash<float>{}(k.second);
+				// Standard hash combining technique (from Boost)
+				return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
+			}
+			std::size_t operator()(const std::pair<std::string_view, float>& k) const noexcept {
+				std::size_t h1 = std::hash<std::string_view>{}(k.first);
 				std::size_t h2 = std::hash<float>{}(k.second);
 				// Standard hash combining technique (from Boost)
 				return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
@@ -39,7 +44,10 @@ private:
 		};
 
 		TTF_TextEngine* m_engine = nullptr;
-		std::unordered_map<std::pair<std::string, float>, TTF_Font*, FontKeyHash> m_fonts;
+		std::unordered_map<
+		    std::pair<std::string, float>, TTF_Font*,
+		    FontKeyHash, std::equal_to<>>
+		    m_fonts;
 
 	public:
 		FontManager(SDL_Renderer* renderer)
@@ -53,20 +61,24 @@ private:
 			TTF_DestroyRendererTextEngine(m_engine);
 		}
 
-		TTF_Font* font(std::string fileName, float size) {
+		TTF_Font* font(std::string_view fileName, float size) {
 			if (!std::filesystem::exists(fileName)) {
 				throw std::runtime_error("Text: Specified path does not exist!");
 			}
 
-			if (m_fonts.find({ fileName, size }) == m_fonts.end()) {
-				return m_fonts.insert({ { fileName, size }, TTF_OpenFont(fileName.c_str(), size) }).first->second;
+			auto it = m_fonts.find(std::pair<std::string_view, float>(fileName, size));
+
+			if (it == m_fonts.end()) { // not found; lazy caching
+				return m_fonts.insert({ { std::string(fileName), size },
+				                        TTF_OpenFont(fileName.data(), size) })
+				    .first->second;
 			} else {
-				return m_fonts.find({ fileName, size })->second;
+				return it->second;
 			}
 		}
 
-		TTF_Text* text(std::string fileName, float size, std::string text) {
-			return TTF_CreateText(m_engine, font(fileName, size), text.c_str(), 0);
+		TTF_Text* text(std::string_view fileName, float size, std::string_view text) {
+			return TTF_CreateText(m_engine, font(fileName, size), text.data(), 0);
 		}
 	};
 
@@ -86,7 +98,7 @@ public:
 	}
 
 public:
-	Text(std::string fileName, float size, std::string text)
+	Text(std::string_view fileName, float size, std::string_view text)
 	    : m_text(fontManager->text(fileName, size, text)) {}
 
 	~Text() {
@@ -103,15 +115,15 @@ public:
 		return { r, g, b, a };
 	}
 
-	void setText(std::string text) {
-		TTF_SetTextString(m_text, text.c_str(), 0);
+	void setText(std::string_view text) {
+		TTF_SetTextString(m_text, text.data(), 0);
 	}
 
-	std::string getText() {
-		return std::string(m_text->text);
+	std::string_view getText() {
+		return std::string_view(m_text->text);
 	}
 
-	void setFont(std::string fileName, float size) {
+	void setFont(std::string_view fileName, float size) {
 		TTF_SetTextFont(m_text, fontManager->font(fileName, size));
 	}
 
@@ -123,25 +135,6 @@ public:
 
 	void render(SDL_FPoint pos) {
 		TTF_DrawRendererText(m_text, pos.x, pos.y);
-	}
-};
-
-class Label : public WidgetBase {
-private:
-	Text m_text;
-
-public:
-	Label(FRect rect_, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
-	    : WidgetBase(rect_), m_text(Text(fontFile_, size_, text_)) {
-		m_text.setColor(color_);
-	}
-
-	// 	void changeColor(SDL_Color color) {
-	// 		m_text.setColor(color);
-	// 	}
-
-	void render(Renderer&) override {
-		m_text.render(m_rect.pos());
 	}
 };
 } // namespace uii
