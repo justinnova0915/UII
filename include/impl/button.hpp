@@ -2,50 +2,39 @@
 
 #pragma once
 
+#include "renderer.hpp"
+#include "text.hpp"
+#include "widget_base.hpp"
+
 #include <SDL3/SDL_rect.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <functional>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+
+#include <functional>
 #include <string>
 
-#include "renderer.hpp"
-#include "box.hpp"
-#include "text.hpp"
-#include "element.hpp"
 
 namespace uii {
-class Button: public BaseElement {
+class ButtonWidgetBase : public WidgetBase {
 private:
-    Box m_box;
-    Label m_text;
+	std::function<void()> m_callBack;
 
-    FontManager& m_textEngine;
-    std::function<void()> m_callBack;
 public:
-    Button(Box box_, std::string text_, FontManager& textEngine_, std::string fontHandle_)
-        : m_box(box_), m_textEngine(textEngine_) {
-            m_textEngine.createText(fontHandle_, text_, (box_..x, , SDL_Color color)
-        }
+	ButtonWidgetBase(SDL_FRect rect_, std::function<void()> callback_)
+	    : WidgetBase(rect_), m_callBack(callback_) {}
 
-    void onPressed() {
-        m_callBack();
-    }
+	void onPressed() {
+		m_callBack();
+	}
 
-    void hookCallback(std::function<void()> callback) {
-        m_callBack = callback;
-    }
-
-    void update(SDL_FPoint mouse) override {
-
-    }
-
-
-
-    void render() override {
-        m_box.render();
-        m_textEngine.render()
-    }
-
+	void setCallback(std::function<void()> callback) {
+		m_callBack = callback;
+	}
 };
-}
+
+class ButtonWidget : public ButtonWidgetBase {};
+
+class TextButtonWidget : public ButtonWidgetBase {};
+
+} // namespace uii

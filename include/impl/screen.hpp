@@ -6,33 +6,34 @@
 
 #include <vector>
 
-#include "element.hpp"
+#include "widget_base.hpp"
 #include "renderer.hpp"
 
 namespace uii {
 class Screen {
 private:
-    std::vector<BaseElement*> m_elements;
+	std::vector<WidgetBase*> m_elements;
 
 public:
+	Screen(std::vector<WidgetBase*> elements_)
+	    : m_elements(elements_) {}
 
-    Screen(std::vector<BaseElement*> elements_)
-        : m_elements(elements_) { }
+	void addElement(WidgetBase* e) {
+		m_elements.push_back(e);
+	}
 
-    void addElement(BaseElement* e) {
-        m_elements.push_back(e);
-    }
-
-    void render(Renderer& renderer) {
-        for (BaseElement* e: m_elements) {
-            e->render(renderer);
-        }
-    }
-
-    void update() {
-        for (BaseElement* e: m_elements) {
-            e->update();
-        }
-    }
+	void render(Renderer& renderer) {
+		for (WidgetBase* e : m_elements) {
+			e->render(renderer);
+		}
+	}
+	/**
+     * @brief hello twin
+     */
+	void update() {
+		for (WidgetBase* e : m_elements) {
+			e->update();
+		}
+	}
 };
-}
+} // namespace uii

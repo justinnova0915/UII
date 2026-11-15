@@ -3,5 +3,4 @@
 #pragma once
 
 namespace uii::impl {
-    inline 
 }

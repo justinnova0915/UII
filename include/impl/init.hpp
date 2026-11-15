@@ -2,16 +2,14 @@
 
 #pragma once
 #include "renderer.hpp"
-#include "box.hpp"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
 namespace uii {
 
 inline void init() {
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_Log("SDL Error: %s", SDL_GetError());
-    }
+	if (!SDL_Init(SDL_INIT_VIDEO)) {
+		SDL_Log("SDL Error: %s", SDL_GetError());
+	}
 }
-}
-
+} // namespace uii
