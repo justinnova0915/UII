@@ -3,6 +3,7 @@
 #include "uii/uii.h"
 
 #include "tx/resource.h"
+#include <string>
 
 int main() {
 	uii::init();
@@ -13,10 +14,10 @@ int main() {
 		uii::LabelWidget l(uii::FRect(0, 0, 1600, 900), "Hello", { 255, 255, 255, 255 },
 		                   tx::getExeDir() / "assets/JetBrainsMono-Regular.ttf", 64);
 
-
 		bool running = true;
 		SDL_Event event;
 
+		int counter = 0;
 		while (running) {
 			while (SDL_PollEvent(&event)) {
 				if (event.type == SDL_EVENT_QUIT) {
@@ -27,6 +28,8 @@ int main() {
 			rr.clear({ 0, 0, 0, 255 });
 
 			l.render(rr);
+			l.setTextString(std::to_string(counter));
+			counter++;
 
 			rr.swap();
 		}
