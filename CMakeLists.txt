@@ -53,6 +53,9 @@ set(CMakeUtils "${TXLib_SOURCE_DIR}/cmake")
 add_library(UII STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/uii/uii.h"
 
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/infrastructure/infrastructure.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/infrastructure/geometry.hpp"
+
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/core/core.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/core/renderer.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/impl/uii/core/text.hpp"

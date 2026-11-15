@@ -126,17 +126,17 @@ private:
 	Text m_text;
 
 public:
-	Label(Rect rect_, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
+	Label(FRect rect_, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
 	    : WidgetBase(rect_), m_text(Text(fontFile_, size_, text_)) {
 		m_text.setColor(color_);
 	}
 
-// 	void changeColor(SDL_Color color) {
-// 		m_text.setColor(color);
-// 	}
+	// 	void changeColor(SDL_Color color) {
+	// 		m_text.setColor(color);
+	// 	}
 
 	void render(Renderer& renderer) override {
-		m_text.render(m_rect.getPos());
+		m_text.render(m_rect.pos());
 	}
 };
 } // namespace uii

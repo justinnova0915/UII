@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "helper.hpp"
+#include "impl/uii/infrastructure/infrastructure.hpp"
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_pixels.h>
@@ -37,9 +38,9 @@ public:
 		return m_renderer;
 	}
 
-	void renderRect(Rect rect_, SDL_Color c) {
+	void renderRect(FRect rect_, SDL_Color c) {
 		setRenderDrawColor(c);
-		SDL_FRect rect = rect_.getRect();
+		SDL_FRect rect = rect_.rect();
 		SDL_RenderRect(m_renderer, &rect);
 	}
 

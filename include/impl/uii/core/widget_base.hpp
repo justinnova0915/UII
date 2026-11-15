@@ -13,10 +13,10 @@
 namespace uii {
 class WidgetBase {
 protected:
-	Rect m_rect;
+	FRect m_rect;
 
 public:
-	WidgetBase(Rect rect_)
+	WidgetBase(FRect rect_)
 	    : m_rect(rect_) {}
 
 	virtual void render(Renderer& renderer) {
