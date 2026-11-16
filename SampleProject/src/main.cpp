@@ -3,16 +3,19 @@
 #include "uii/uii.h"
 
 #include "tx/resource.h"
+#include <utility>
 #include <string>
 
 int main() {
 	uii::init();
 	{
-		uii::Renderer rr(1600, 900);
-		uii::Text::init(rr.getSDLRenderer());
+		uii::Renderer renderer(1600, 900);
+		uii::Text::init(renderer.getSDLRenderer());
 
-		uii::LabelWidget l(uii::FRect(0, 0, 1600, 900), "Hello", { 255, 255, 255, 255 },
-		                   tx::getExeDir() / "assets/JetBrainsMono-Regular.ttf", 64);
+		std::string FONT_PATH_JETBRAINS_MONO = tx::getExeDir() / "assets/JetBrainsMono-Regular.ttf";
+
+		uii::LabelWidget label(uii::FRect(0, 0, 1600, 900), "Hello", { 255, 255, 255, 255 },
+		                       FONT_PATH_JETBRAINS_MONO, 64);
 
 		bool running = true;
 		SDL_Event event;
@@ -25,13 +28,13 @@ int main() {
 				}
 			}
 
-			rr.clear({ 0, 0, 0, 255 });
+			renderer.clear({ 0, 0, 0, 255 });
 
-			l.render(rr);
-			l.setTextString(std::to_string(counter));
+			label.render(renderer);
+			label.setTextString(std::to_string(counter));
 			counter++;
 
-			rr.swap();
+			renderer.swap();
 		}
 		uii::Text::quit();
 	}

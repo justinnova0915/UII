@@ -27,6 +27,7 @@ class Text {
 private:
 	class FontManager {
 	private:
+		// Mystical magical hashing algorithm
 		struct FontKeyHash {
 			using is_transparent = void;
 			std::size_t operator()(const std::pair<std::string, float>& k) const noexcept {

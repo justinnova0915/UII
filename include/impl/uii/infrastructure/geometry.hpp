@@ -15,6 +15,7 @@ struct FRect;
 struct DRect {
 	int x = 0, y = 0, w = 0, h = 0;
 
+	// What is this for?
 	constexpr DRect() = default;
 
 	// xywh constructor
@@ -46,6 +47,7 @@ struct DRect {
 struct FRect {
 	float x = 0.0f, y = 0.0f, w = 0.0f, h = 0.0f;
 
+	// What is this for?
 	constexpr FRect() = default;
 
 	// xywh constructor
@@ -56,6 +58,7 @@ struct FRect {
 	constexpr FRect(SDL_FPoint pos_, SDL_FPoint dim_)
 	    : x(pos_.x), y(pos_.y), w(dim_.x), h(dim_.y) {}
 
+	// SDL_FRect constructor
 	constexpr FRect(const SDL_FRect& r)
 	    : x(r.x), y(r.y), w(r.w), h(r.h) {}
 
@@ -70,6 +73,7 @@ struct FRect {
 	[[nodiscard]] constexpr SDL_FPoint bottomLeft() const { return { x, y + h }; }
 	[[nodiscard]] constexpr SDL_FPoint bottomRight() const { return { x + w, y + h }; }
 
+	// Converts to DRect. Floors the floats.
 	[[nodiscard]] DRect toDRect() const {
 		return DRect(
 		    static_cast<int>(std::floor(x)),
