@@ -20,6 +20,8 @@ int main() {
 		bool running = true;
 		uii::Context context;
 
+		SDL_Event event;
+
 		int counter = 0;
 		while (running) {
 			while (SDL_PollEvent(&event)) {

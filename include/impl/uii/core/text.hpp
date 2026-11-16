@@ -23,68 +23,66 @@ namespace uii {
 // **************** Text & Font Managing ****************
 // ======================================================
 
-class Text {
+class FontManager {
 private:
-	class FontManager {
-	private:
-		// Mystical magical hashing algorithm
-		struct FontKeyHash {
-			using is_transparent = void;
-			std::size_t operator()(const std::pair<std::string, float>& k) const noexcept {
-				std::size_t h1 = std::hash<std::string>{}(k.first);
-				std::size_t h2 = std::hash<float>{}(k.second);
-				// Standard hash combining technique (from Boost)
-				return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
-			}
-			std::size_t operator()(const std::pair<std::string_view, float>& k) const noexcept {
-				std::size_t h1 = std::hash<std::string_view>{}(k.first);
-				std::size_t h2 = std::hash<float>{}(k.second);
-				// Standard hash combining technique (from Boost)
-				return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
-			}
-		};
-
-		TTF_TextEngine* m_engine = nullptr;
-		std::unordered_map<
-		    std::pair<std::string, float>, TTF_Font*,
-		    FontKeyHash, std::equal_to<>>
-		    m_fonts;
-
-	public:
-		FontManager(SDL_Renderer* renderer)
-		    : m_engine(TTF_CreateRendererTextEngine(renderer)) {}
-
-		~FontManager() {
-			for (auto font : m_fonts) {
-				TTF_CloseFont(font.second);
-			}
-
-			TTF_DestroyRendererTextEngine(m_engine);
+	// Mystical magical hashing algorithm
+	struct FontKeyHash {
+		using is_transparent = void;
+		std::size_t operator()(const std::pair<std::string, float>& k) const noexcept {
+			std::size_t h1 = std::hash<std::string>{}(k.first);
+			std::size_t h2 = std::hash<float>{}(k.second);
+			// Standard hash combining technique (from Boost)
+			return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
 		}
-
-		TTF_Font* font(std::string_view fileName, float size) {
-			if (!std::filesystem::exists(fileName)) {
-				throw std::runtime_error("Text: Specified path does not exist!");
-			}
-
-			auto it = m_fonts.find(std::pair<std::string_view, float>(fileName, size));
-
-			if (it == m_fonts.end()) { // not found; lazy caching
-				return m_fonts.insert({ { std::string(fileName), size },
-				                        TTF_OpenFont(fileName.data(), size) })
-				    .first->second;
-			} else {
-				return it->second;
-			}
-		}
-
-		TTF_Text* text(std::string_view fileName, float size, std::string_view text) {
-			return TTF_CreateText(m_engine, font(fileName, size), text.data(), 0);
+		std::size_t operator()(const std::pair<std::string_view, float>& k) const noexcept {
+			std::size_t h1 = std::hash<std::string_view>{}(k.first);
+			std::size_t h2 = std::hash<float>{}(k.second);
+			// Standard hash combining technique (from Boost)
+			return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
 		}
 	};
 
+	TTF_TextEngine* m_engine = nullptr;
+	std::unordered_map<
+	    std::pair<std::string, float>, TTF_Font*,
+	    FontKeyHash, std::equal_to<>>
+	    m_fonts;
+
+public:
+	FontManager(SDL_Renderer* renderer)
+	    : m_engine(TTF_CreateRendererTextEngine(renderer)) {}
+
+	~FontManager() {
+		for (auto font : m_fonts) {
+			TTF_CloseFont(font.second);
+		}
+
+		TTF_DestroyRendererTextEngine(m_engine);
+	}
+
+	TTF_Font* font(std::string_view fileName, float size) {
+		if (!std::filesystem::exists(fileName)) {
+			throw std::runtime_error("Text: Specified path does not exist!");
+		}
+
+		auto it = m_fonts.find(std::pair<std::string_view, float>(fileName, size));
+
+		if (it == m_fonts.end()) { // not found; lazy caching
+			return m_fonts.insert({ { std::string(fileName), size },
+			                        TTF_OpenFont(fileName.data(), size) })
+			    .first->second;
+		} else {
+			return it->second;
+		}
+	}
+
+	TTF_Text* text(std::string_view fileName, float size, std::string_view text) {
+		return TTF_CreateText(m_engine, font(fileName, size), text.data(), 0);
+	}
+};
+
+class Text {
 private:
-	inline static std::optional<FontManager> fontManager;
 	TTF_Text* m_text;
 
 public:
@@ -99,8 +97,8 @@ public:
 	}
 
 public:
-	Text(std::string_view fileName, float size, std::string_view text)
-	    : m_text(fontManager->text(fileName, size, text)) {}
+	Text(FontManager& fontManager, std::string_view fileName, float size, std::string_view text)
+	    : m_text(fontManager.text(fileName, size, text)) {}
 
 	~Text() {
 		TTF_DestroyText(m_text);
@@ -124,8 +122,8 @@ public:
 		return std::string_view(m_text->text);
 	}
 
-	void setFont(std::string_view fileName, float size) {
-		TTF_SetTextFont(m_text, fontManager->font(fileName, size));
+	void setFont(FontManager& fontManager, std::string_view fileName, float size) {
+		TTF_SetTextFont(m_text, fontManager.font(fileName, size));
 	}
 
 	SDL_FPoint getSize() {
