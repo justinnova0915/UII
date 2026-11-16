@@ -1,6 +1,7 @@
 // Copyright (c) 2026 UII. Licensed under the GPL-3.0 License.
 
 #pragma once
+#include "impl/uii/core/context.hpp"
 #include "impl/uii/core/renderer.hpp"
 
 #include <SDL3/SDL.h>
@@ -16,6 +17,8 @@
 
 
 namespace uii {
+
+class RootWidget;
 
 class WidgetBase {
 protected:
@@ -34,7 +37,7 @@ public:
 		renderer.renderRect(m_rect, styleSheet.color);
 	}
 
-	virtual void update() {
+	virtual void update(Context& context) {
 		return;
 	}
 
@@ -53,12 +56,12 @@ public:
 
 	void addChild(std::string handle, WidgetBase* child) {
 		if (!child) {
-			SDL_Log("Warning: Child is null");
+			SDL_Log("Warning: Child is null!");
 			return;
 		}
 
 		if (child == this) {
-			SDL_Log("Warning: Trying to parent to self");
+			SDL_Log("Warning: Trying to parent to self!");
 			return;
 		}
 
@@ -71,9 +74,11 @@ public:
 		child->m_parent = this;
 	}
 
+	void addChild(std::string handle, RootWidget* child) = delete;
+
 	void removeChild(std::string handle) {
 		if (m_childs.find(handle) == m_childs.end()) {
-			SDL_Log("Warning: Child with handle %s not found", handle.c_str());
+			SDL_Log("Warning: Child with handle %s not found!", handle.c_str());
 			return;
 		}
 
@@ -86,5 +91,8 @@ public:
 		SDL_Color color;
 	} styleSheet;
 };
-class Widget : public WidgetBase {};
+class RootWidget : public WidgetBase {
+public:
+	void removeParent() = delete;
+};
 } // namespace uii

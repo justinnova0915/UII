@@ -18,8 +18,10 @@ private:
 	std::function<void()> m_callBack;
 
 public:
-	ButtonWidgetBase(Rect rect_, std::function<void()> callback_)
+	ButtonWidgetBase(FRect rect_, std::function<void()> callback_)
 	    : WidgetBase(rect_), m_callBack(callback_) {}
+
+	update
 
 	void onPressed() {
 		m_callBack();
@@ -37,12 +39,12 @@ private:
 	Text text;
 
 public:
-	TextButtonWidget(Rect rect_, std::function<void()> callback_, std::string text_, std::string fontFile_, float textSize_)
+	TextButtonWidget(FRect rect_, std::function<void()> callback_, std::string text_, std::string fontFile_, float textSize_)
 	    : ButtonWidgetBase(rect_, callback_), text(fontFile_, textSize_, text_) {}
 
 	void render(Renderer& renderer) override {
 		WidgetBase::render(renderer);
-		renderer.renderText(text., m_rect)
+		text.render(m_rect.topLeft());
 	}
 };
 

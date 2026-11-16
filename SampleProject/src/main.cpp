@@ -18,7 +18,7 @@ int main() {
 		                       FONT_PATH_JETBRAINS_MONO, 64);
 
 		bool running = true;
-		SDL_Event event;
+		uii::Context context;
 
 		int counter = 0;
 		while (running) {
