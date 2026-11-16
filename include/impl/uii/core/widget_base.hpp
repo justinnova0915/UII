@@ -4,6 +4,7 @@
 #include "impl/uii/core/renderer.hpp"
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_log.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_pixels.h>
@@ -15,13 +16,15 @@
 
 
 namespace uii {
-class ContainerWidgetBase;
 
 class WidgetBase {
 protected:
+	std::string m_handle;
+
 	FRect m_rect;
 
-	ContainerWidgetBase* m_parent;
+	WidgetBase* m_parent = nullptr;
+	std::unordered_map<std::string, WidgetBase*> m_childs;
 
 public:
 	WidgetBase(FRect rect_)
@@ -44,13 +47,38 @@ public:
 			throw std::runtime_error("Dawg there is no parent what are you doing");
 		}
 
-		m_parent->m_childs.erase(handle);
+		m_parent->removeChild(m_handle);
 		m_parent = nullptr;
 	}
 
-	void setParent(ContainerWidgetBase* parent) {
-		m_parent->addChild(handle, WidgetBase * child)
-		    m_parent = parent;
+	void addChild(std::string handle, WidgetBase* child) {
+		if (!child) {
+			SDL_Log("Warning: Child is null");
+			return;
+		}
+
+		if (child == this) {
+			SDL_Log("Warning: Trying to parent to self");
+			return;
+		}
+
+		if (child->m_parent != nullptr) {
+			child->removeParent();
+		}
+
+		child->m_handle = handle;
+		m_childs.insert({ handle, child });
+		child->m_parent = this;
+	}
+
+	void removeChild(std::string handle) {
+		if (m_childs.find(handle) == m_childs.end()) {
+			SDL_Log("Warning: Child with handle %s not found", handle.c_str());
+			return;
+		}
+
+		m_childs.find(handle)->second->m_parent = nullptr;
+		m_childs.erase(handle);
 	}
 
 public:
@@ -58,23 +86,5 @@ public:
 		SDL_Color color;
 	} styleSheet;
 };
-
-class ContainerWidgetBase : WidgetBase {
-private:
-	std::string handle;
-
-	ContainerWidgetBase* m_parent;
-	std::unordered_map<std::string, WidgetBase*> m_childs;
-
-public:
-	void addChild(std::string handle, WidgetBase* child) {
-		m_childs.insert({ handle, child });
-	}
-
-	void removeChild(std::string handle) {
-		m_childs.erase(handle);
-	}
-};
-
 class Widget : public WidgetBase {};
 } // namespace uii
