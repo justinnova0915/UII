@@ -1,14 +1,17 @@
 // Copyright (c) 2026 UII. Licensed under the GPL-3.0 License.
 
 #pragma once
+
+#include "renderer.hpp"
+#include "text.hpp"
+
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_events.h>
 #include <SDL3/SDL_main.h>
 
 namespace uii {
-struct Context {
-	SDL_FPoint mousePos;
+struct WindowContext {
+	std::optional<Renderer> renderer;
 
-	SDL_Event event;
+	std::optional<FontManager> fontManager;
 };
 } // namespace uii

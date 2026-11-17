@@ -85,20 +85,11 @@ class Text {
 private:
 	TTF_Text* m_text;
 
-public:
-	static void init(SDL_Renderer* renderer) {
-		if (!TTF_Init()) throw std::runtime_error("Failed to init TTF.");
-		// FontManager contructor
-		fontManager.emplace(renderer);
-	}
-	static void quit() {
-		fontManager.reset();
-		TTF_Quit();
-	}
+	FontManager* m_fontManager;
 
 public:
-	Text(FontManager& fontManager, std::string_view fileName, float size, std::string_view text)
-	    : m_text(fontManager.text(fileName, size, text)) {}
+	Text(FontManager& fontManager_, std::string_view fileName_, float size_, std::string_view text_)
+	    : m_text(fontManager_.text(fileName_, size_, text_)), m_fontManager(&fontManager_) {}
 
 	~Text() {
 		TTF_DestroyText(m_text);
@@ -122,8 +113,8 @@ public:
 		return std::string_view(m_text->text);
 	}
 
-	void setFont(FontManager& fontManager, std::string_view fileName, float size) {
-		TTF_SetTextFont(m_text, fontManager.font(fileName, size));
+	void setFont(std::string_view fileName, float size) {
+		TTF_SetTextFont(m_text, m_fontManager->font(fileName, size));
 	}
 
 	SDL_FPoint getSize() {

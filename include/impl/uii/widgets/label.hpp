@@ -2,6 +2,8 @@
 
 #pragma once
 #include "impl/uii/core/core.hpp"
+#include "impl/uii/core/text.hpp"
+#include "impl/uii/core/window.hpp"
 
 namespace uii {
 class LabelWidget : public WidgetBase {
@@ -9,12 +11,12 @@ private:
 	Text m_text;
 
 public:
-	LabelWidget(FRect rect_, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
-	    : WidgetBase(rect_), m_text(fontFile_, size_, text_) {
+	LabelWidget(FRect rect_, WindowContext context, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
+	    : WidgetBase(rect_, context), m_text(context.fontManager.value(), fontFile_, size_, text_) {
 		m_text.setColor(color_);
 	}
 
-	void render(Renderer&) override {
+	void render(WindowContext& context) override {
 		m_text.render(m_rect.pos());
 	}
 

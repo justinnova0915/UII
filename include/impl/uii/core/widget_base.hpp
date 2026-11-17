@@ -1,8 +1,8 @@
 // Copyright (c) 2026 UII. Licensed under the GPL-3.0 License.
 
 #pragma once
-#include "impl/uii/core/context.hpp"
 #include "impl/uii/core/renderer.hpp"
+#include "context.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_log.h>
@@ -26,19 +26,26 @@ protected:
 
 	FRect m_rect;
 
+	WindowContext context;
+
 	WidgetBase* m_parent = nullptr;
 	std::unordered_map<std::string, WidgetBase*> m_childs;
 
 public:
-	WidgetBase(FRect rect_)
-	    : m_rect(rect_) {}
+	WidgetBase(FRect rect_, WindowContext& context_)
+	    : m_rect(rect_), context(context_) {}
 
-	virtual void render(Renderer& renderer) {
-		renderer.renderRect(m_rect, styleSheet.color);
+	virtual void render(WindowContext& context) {
+		context.renderer->renderRect(m_rect, styleSheet.color);
+		for (auto i : m_childs) {
+			i.second->render(context);
+		}
 	}
 
-	virtual void update(Context& context) {
-		return;
+	virtual void update(WindowContext& context) {
+		for (auto i : m_childs) {
+			i.second->update(context);
+		}
 	}
 
 	WidgetBase* getParent() {
@@ -93,6 +100,7 @@ public:
 };
 class RootWidget : public WidgetBase {
 public:
+	using WidgetBase::WidgetBase;
 	void removeParent() = delete;
 };
 } // namespace uii
