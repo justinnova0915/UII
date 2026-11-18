@@ -3,6 +3,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_log.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
@@ -51,9 +52,11 @@ private:
 public:
 	FontManager(SDL_Renderer* renderer)
 	    : m_engine(TTF_CreateRendererTextEngine(renderer)) {}
+	FontManager(const FontManager&) = delete;
 
 	~FontManager() {
-		for (auto font : m_fonts) {
+		for (auto& font : m_fonts) {
+			SDL_Log(font.first.first.c_str());
 			TTF_CloseFont(font.second);
 		}
 

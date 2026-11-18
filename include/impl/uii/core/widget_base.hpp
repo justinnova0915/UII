@@ -26,14 +26,14 @@ protected:
 
 	FRect m_rect;
 
-	WindowContext context;
+	WindowContext* context;
 
 	WidgetBase* m_parent = nullptr;
 	std::unordered_map<std::string, WidgetBase*> m_childs;
 
 public:
 	WidgetBase(FRect rect_, WindowContext& context_)
-	    : m_rect(rect_), context(context_) {}
+	    : m_rect(rect_), context(&context_) {}
 
 	virtual void render(WindowContext& context) {
 		context.renderer->renderRect(m_rect, styleSheet.color);

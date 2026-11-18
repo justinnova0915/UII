@@ -9,6 +9,7 @@
 #include <SDL3/SDL_mouse.h>
 #include <iostream>
 #include <optional>
+#include <stdexcept>
 
 namespace uii {
 class Window {
@@ -22,9 +23,9 @@ public:
 	Window(float WINDOW_WIDTH_, float WINDOW_HEIGHT_)
 	    : root({ 0, 0, WINDOW_WIDTH_, WINDOW_HEIGHT_ }, context) {
 		context.renderer.emplace(WINDOW_WIDTH_, WINDOW_HEIGHT_);
-		if (!context.renderer.has_value()) std::cout << "AHHH\n";
+		if (!context.renderer.has_value()) throw std::runtime_error("Renderer did NOT init 😭😭😭");
 		context.fontManager.emplace(context.renderer->getSDLRenderer());
-		if (!context.fontManager.has_value()) std::cout << "AHHH\n";
+		if (!context.fontManager.has_value()) throw std::runtime_error("FontManager crashed :(");
 	}
 
 	WindowContext& getContext() {
