@@ -1,6 +1,8 @@
 // Copyright (c) 2026 UII. Licensed under the GPL-3.0 License.
 
 #include "impl/uii/core/window.hpp"
+#include "impl/uii/widgets/button.hpp"
+#include "impl/uii/widgets/label.hpp"
 #include "uii/uii.h"
 
 #include "tx/resource.h"
@@ -17,26 +19,19 @@ int main() {
 
 		uii::LabelWidget label(uii::FRect(0, 0, 1600, 900), window.getContext(), "Hello", { 255, 255, 255, 255 },
 		                       FONT_PATH_JETBRAINS_MONO, 64);
+		int counter = 0;
+
+		uii::ButtonWidget button(uii::FRect(200, 500, 400, 200), { 255, 255, 255, 255 }, [&]() { counter++; });
 
 		window.getRootWidget().addChild("label", &label);
+		window.getRootWidget().addChild("button", &button);
 
 		bool running = true;
 
-		SDL_Event event;
-
-		int counter = 0;
-		SDL_Log("Video driver: %s", SDL_GetCurrentVideoDriver());
 		while (running) {
-			while (SDL_PollEvent(&event)) {
-				if (event.type == SDL_EVENT_QUIT) {
-					running = false;
-				}
-			}
-
-			window.render();
 			window.update();
+			window.render();
 			label.setTextString(std::to_string(counter));
-			counter++;
 		}
 	}
 	uii::quit();

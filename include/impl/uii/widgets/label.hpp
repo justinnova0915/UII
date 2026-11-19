@@ -12,7 +12,7 @@ private:
 
 public:
 	LabelWidget(FRect rect_, WindowContext& context, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
-	    : WidgetBase(rect_, context), m_text(context.fontManager.value(), fontFile_, size_, text_) {
+	    : WidgetBase(rect_, StyleSheet{ color_ }), m_text(context.fontManager.value(), fontFile_, size_, text_) {
 		m_text.setColor(color_);
 	}
 

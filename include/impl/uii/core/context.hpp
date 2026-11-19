@@ -4,6 +4,7 @@
 
 #include "renderer.hpp"
 #include "text.hpp"
+#include "input.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -13,5 +14,7 @@ struct WindowContext {
 	std::optional<Renderer> renderer;
 
 	std::optional<FontManager> fontManager;
+
+	std::optional<InputManager> input;
 };
 } // namespace uii

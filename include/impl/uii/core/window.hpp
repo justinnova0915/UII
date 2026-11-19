@@ -4,6 +4,7 @@
 #include "widget_base.hpp"
 #include "text.hpp"
 #include "renderer.hpp"
+#include "input.hpp"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_mouse.h>
@@ -21,11 +22,13 @@ private:
 
 public:
 	Window(float WINDOW_WIDTH_, float WINDOW_HEIGHT_)
-	    : root({ 0, 0, WINDOW_WIDTH_, WINDOW_HEIGHT_ }, context) {
+	    : root({ 0, 0, WINDOW_WIDTH_, WINDOW_HEIGHT_ }, { 0, 0, 0, 0 }) {
 		context.renderer.emplace(WINDOW_WIDTH_, WINDOW_HEIGHT_);
 		if (!context.renderer.has_value()) throw std::runtime_error("Renderer did NOT init 😭😭😭");
 		context.fontManager.emplace(context.renderer->getSDLRenderer());
 		if (!context.fontManager.has_value()) throw std::runtime_error("FontManager crashed :(");
+		context.input.emplace();
+		if (!context.fontManager.has_value()) throw std::runtime_error("input crashed nooooooooo");
 	}
 
 	WindowContext& getContext() {
@@ -43,6 +46,7 @@ public:
 	}
 
 	void update() {
+		context.input->populate();
 		root.update(context);
 	}
 };

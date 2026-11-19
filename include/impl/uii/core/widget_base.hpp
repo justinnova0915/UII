@@ -26,24 +26,27 @@ protected:
 
 	FRect m_rect;
 
-	WindowContext* context;
-
 	WidgetBase* m_parent = nullptr;
 	std::unordered_map<std::string, WidgetBase*> m_childs;
 
 public:
-	WidgetBase(FRect rect_, WindowContext& context_)
-	    : m_rect(rect_), context(&context_) {}
+	struct StyleSheet {
+		SDL_Color color;
+	} m_styleSheet;
+
+public:
+	WidgetBase(FRect rect_, StyleSheet styleSheet_)
+	    : m_rect(rect_), m_styleSheet(styleSheet_) {}
 
 	virtual void render(WindowContext& context) {
-		context.renderer->renderRect(m_rect, styleSheet.color);
-		for (auto i : m_childs) {
+		context.renderer->renderRect(m_rect, m_styleSheet.color);
+		for (auto& i : m_childs) {
 			i.second->render(context);
 		}
 	}
 
 	virtual void update(WindowContext& context) {
-		for (auto i : m_childs) {
+		for (auto& i : m_childs) {
 			i.second->update(context);
 		}
 	}
@@ -92,11 +95,6 @@ public:
 		m_childs.find(handle)->second->m_parent = nullptr;
 		m_childs.erase(handle);
 	}
-
-public:
-	struct StyleSheet {
-		SDL_Color color;
-	} styleSheet;
 };
 class RootWidget : public WidgetBase {
 public:

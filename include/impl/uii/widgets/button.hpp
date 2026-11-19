@@ -2,7 +2,10 @@
 
 #pragma once
 
+#include "impl/uii/core/context.hpp"
 #include "impl/uii/core/core.hpp"
+#include "impl/uii/core/input.hpp"
+#include "impl/uii/core/text.hpp"
 
 #include <SDL3/SDL_rect.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -18,10 +21,14 @@ private:
 	std::function<void()> m_callBack;
 
 public:
-	ButtonWidgetBase(FRect rect_, std::function<void()> callback_)
-	    : WidgetBase(rect_), m_callBack(callback_) {}
+	ButtonWidgetBase(FRect rect_, SDL_Color color_, std::function<void()> callback_)
+	    : WidgetBase(rect_, StyleSheet{ .color = color_ }), m_callBack(callback_) {}
 
-	update
+	void update(WindowContext& context) override {
+		if (context.input->isMouseDown(InputManager::MouseButtons::LEFT)) {
+			onPressed();
+		}
+	}
 
 	void onPressed() {
 		m_callBack();
@@ -32,18 +39,22 @@ public:
 	}
 };
 
-class ButtonWidget : public ButtonWidgetBase {};
+class ButtonWidget : public ButtonWidgetBase {
+public:
+	ButtonWidget(FRect rect_, SDL_Color color_, std::function<void()> callback_)
+	    : ButtonWidgetBase(rect_, color_, callback_) {}
+};
 
 class TextButtonWidget : public ButtonWidgetBase {
 private:
 	Text text;
 
 public:
-	TextButtonWidget(FRect rect_, std::function<void()> callback_, std::string text_, std::string fontFile_, float textSize_)
-	    : ButtonWidgetBase(rect_, callback_), text(fontFile_, textSize_, text_) {}
+	TextButtonWidget(FontManager& fontManager_, FRect rect_, SDL_Color color_, std::function<void()> callback_, std::string text_, std::string fontFile_, float textSize_)
+	    : ButtonWidgetBase(rect_, color_, callback_), text(fontManager_, fontFile_, textSize_, text_) {}
 
-	void render(Renderer& renderer) override {
-		WidgetBase::render(renderer);
+	void render(WindowContext& context) override {
+		WidgetBase::render(context);
 		text.render(m_rect.topLeft());
 	}
 };

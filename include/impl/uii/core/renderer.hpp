@@ -74,7 +74,7 @@ public:
 	void renderRect(FRect rect_, SDL_Color c) {
 		setRenderDrawColor_impl(c);
 		SDL_FRect rect = rect_.rect();
-		SDL_RenderRect(m_renderer, &rect);
+		SDL_RenderFillRect(m_renderer, &rect);
 	}
 };
 } // namespace uii
