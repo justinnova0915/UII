@@ -25,7 +25,7 @@ public:
 	    : WidgetBase(rect_, StyleSheet{ .color = color_ }), m_callBack(callback_) {}
 
 	void update(WindowContext& context) override {
-		if (context.input->isMouseDown(InputManager::MouseButtons::LEFT)) {
+		if (context.input->isMousePressed(InputManager::MouseButtons::LEFT)) {
 			onPressed();
 		}
 	}

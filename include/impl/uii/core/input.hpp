@@ -7,12 +7,13 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_rect.h>
+#include <vector>
 
 namespace uii {
 
 class InputManager {
 private:
-	SDL_Event event;
+	std::vector<SDL_Event> m_events;
 
 public:
 	InputManager() = default;
@@ -26,7 +27,12 @@ public:
 
 
 	void populate() {
-		SDL_PollEvent(&event);
+		m_events.clear();
+
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			m_events.push_back(event);
+		}
 	}
 
 	SDL_FPoint getMousePos() {
@@ -36,16 +42,43 @@ public:
 	}
 
 	bool isMouseDown(MouseButtons button) {
-		if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-			switch (button) {
-			case MouseButtons::LEFT:
-				if (event.button.button == SDL_BUTTON_LEFT) return true;
-			case MouseButtons::MIDDLE:
-				if (event.button.button == SDL_BUTTON_MIDDLE) return true;
-			case MouseButtons::RIGHT:
-				if (event.button.button == SDL_BUTTON_RIGHT) return true;
-			case MouseButtons::COUNT:
-				SDL_Log("Count is not a button twin...");
+		// Gets a bitmask of all the input buttons,
+		// then AND them to get the exact queried button state.
+		SDL_MouseButtonFlags inputMask = SDL_GetMouseState(nullptr, nullptr);
+		switch (button) {
+		case MouseButtons::LEFT:
+			return (inputMask & SDL_BUTTON_LMASK);
+		case MouseButtons::MIDDLE:
+			return (inputMask & SDL_BUTTON_MMASK);
+		case MouseButtons::RIGHT:
+			return (inputMask & SDL_BUTTON_RMASK);
+		case MouseButtons::COUNT:
+			SDL_Log("Count is not a button twin...");
+		}
+
+		return false;
+	}
+
+	bool isMousePressed(MouseButtons button) {
+		int targetButton = 0;
+		switch (button) {
+		case MouseButtons::LEFT:
+			targetButton = SDL_BUTTON_LEFT;
+			break;
+		case MouseButtons::MIDDLE:
+			targetButton = SDL_BUTTON_MIDDLE;
+			break;
+		case MouseButtons::RIGHT:
+			targetButton = SDL_BUTTON_RIGHT;
+			break;
+		case MouseButtons::COUNT:
+			SDL_Log("Count is not a button twin...");
+			break;
+		}
+
+		for (SDL_Event event : m_events) {
+			if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && event.button.button == targetButton) {
+				return true;
 			}
 		}
 
