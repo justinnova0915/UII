@@ -2,18 +2,25 @@
 
 #pragma once
 #include "impl/uii/core/core.hpp"
+#include "impl/uii/core/styleSheet.hpp"
 #include "impl/uii/core/text.hpp"
+#include "impl/uii/core/widget_base.hpp"
 #include "impl/uii/core/window.hpp"
 
 namespace uii {
 class LabelWidget : public WidgetBase {
 private:
 	Text m_text;
+	std::string m_styleHandle;
 
 public:
-	LabelWidget(FRect rect_, WindowContext& context, std::string text_, SDL_Color color_, std::string fontFile_, float size_)
-	    : WidgetBase(rect_, StyleSheet{ color_ }), m_text(context.fontManager.value(), fontFile_, size_, text_) {
-		m_text.setColor(color_);
+	LabelWidget(FRect rect_, WindowContext& context_, std::string text_, std::string styleHandle_)
+	    : WidgetBase(rect_, styleHandle_),
+	      m_text(context_.fontManager.value(),
+		         context_.styleSheet.getStyle(styleHandle_).textFontPath.value(),
+		         context_.styleSheet.getStyle(styleHandle_).textFontSize.value(),
+		         text_) {
+		m_text.setColor(context_.styleSheet.getStyle(styleHandle_).textColor.value());
 	}
 
 	void render(WindowContext& context) override {
@@ -31,5 +38,26 @@ public:
 	void setTextFont(std::string_view fileName, float size) { m_text.setFont(fileName, size); }
 
 	SDL_FPoint getTextSize() { return m_text.getSize(); }
+
+public:
+	struct LabelStyle : WidgetBase::BaseStyle {
+		std::optional<std::string> textFontPath;
+		std::optional<float> textFontSize;
+		std::optional<SDL_Color> textColor;
+
+		MasterStyle toMaster() {
+			MasterStyle baseStyle = BaseStyle::toMaster();
+			baseStyle.textFontPath = textFontPath;
+			baseStyle.textFontSize = textFontSize;
+			baseStyle.textColor = textColor;
+
+			return baseStyle;
+		}
+	};
+
+
+	static void registerStyle(StyleSheet& sheet, std::string handle, LabelStyle style) {
+		sheet.setStyle(handle, style.toMaster());
+	}
 };
 } // namespace uii

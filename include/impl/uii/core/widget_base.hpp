@@ -2,6 +2,7 @@
 
 #pragma once
 #include "impl/uii/core/renderer.hpp"
+#include "styleSheet.hpp"
 #include "context.hpp"
 
 #include <SDL3/SDL.h>
@@ -12,6 +13,7 @@
 #include <SDL3/SDL_rect.h>
 
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -23,6 +25,7 @@ class RootWidget;
 class WidgetBase {
 protected:
 	std::string m_handle;
+	std::string m_styleHandle;
 
 	FRect m_rect;
 
@@ -30,16 +33,24 @@ protected:
 	std::unordered_map<std::string, WidgetBase*> m_childs;
 
 public:
-	struct StyleSheet {
-		SDL_Color color;
-	} m_styleSheet;
+	struct BaseStyle {
+		std::optional<SDL_Color> baseColor;
+
+		MasterStyle toMaster() {
+			return MasterStyle{ .baseColor = baseColor };
+		}
+	};
+
+	static void registerStyle(StyleSheet& sheet, std::string parentHandle_, std::string handle, BaseStyle style) {
+		sheet.setStyle(handle, style.toMaster());
+	}
 
 public:
-	WidgetBase(FRect rect_, StyleSheet styleSheet_)
-	    : m_rect(rect_), m_styleSheet(styleSheet_) {}
+	WidgetBase(FRect rect_, std::string handle_)
+	    : m_styleHandle(handle_), m_rect(rect_) {}
 
 	virtual void render(WindowContext& context) {
-		context.renderer->renderRect(m_rect, m_styleSheet.color);
+		context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_handle).baseColor.value());
 		for (auto& i : m_childs) {
 			i.second->render(context);
 		}
@@ -95,7 +106,14 @@ public:
 		m_childs.find(handle)->second->m_parent = nullptr;
 		m_childs.erase(handle);
 	}
+
+	bool isHovered(WindowContext& context) {
+		SDL_FPoint mousePos = context.input->getMousePos();
+		SDL_FRect rect = m_rect.rect();
+		return SDL_PointInRectFloat(&mousePos, &rect);
+	}
 };
+
 class RootWidget : public WidgetBase {
 public:
 	using WidgetBase::WidgetBase;

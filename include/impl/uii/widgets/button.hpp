@@ -6,7 +6,9 @@
 #include "impl/uii/core/core.hpp"
 #include "impl/uii/core/input.hpp"
 #include "impl/uii/core/text.hpp"
+#include "impl/uii/core/widget_base.hpp"
 
+#include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3/SDL.h>
@@ -21,12 +23,14 @@ private:
 	std::function<void()> m_callBack;
 
 public:
-	ButtonWidgetBase(FRect rect_, SDL_Color color_, std::function<void()> callback_)
-	    : WidgetBase(rect_, StyleSheet{ .color = color_ }), m_callBack(callback_) {}
+	ButtonWidgetBase(FRect rect_, std::string stringHandle_, std::function<void()> callback_)
+	    : WidgetBase(rect_, stringHandle_), m_callBack(callback_) {}
 
 	void update(WindowContext& context) override {
-		if (context.input->isMousePressed(InputManager::MouseButtons::LEFT)) {
-			onPressed();
+		if (isHovered(context)) {
+			if (context.input->isMousePressed(InputManager::MouseButtons::LEFT)) {
+				onPressed();
+			}
 		}
 	}
 
@@ -37,26 +41,56 @@ public:
 	void setCallback(std::function<void()> callback) {
 		m_callBack = callback;
 	}
+
+public:
+	struct ButtonWidgetStyle : WidgetBase::BaseStyle {
+		std::optional<SDL_Color> hoverColor;
+
+		MasterStyle toMaster() {
+			MasterStyle baseStyle = BaseStyle::toMaster();
+			baseStyle.hoverColor = hoverColor;
+
+			return baseStyle;
+		}
+	};
 };
 
 class ButtonWidget : public ButtonWidgetBase {
 public:
-	ButtonWidget(FRect rect_, SDL_Color color_, std::function<void()> callback_)
-	    : ButtonWidgetBase(rect_, color_, callback_) {}
+	ButtonWidget(FRect rect_, std::string stringHandle_, std::function<void()> callback_)
+	    : ButtonWidgetBase(rect_, stringHandle_, callback_) {}
+
+public:
+	static void registerStyle(StyleSheet& sheet, std::string handle, ButtonWidgetStyle style) {
+		sheet.setStyle(handle, style.toMaster());
+	}
 };
 
 class TextButtonWidget : public ButtonWidgetBase {
 private:
-	Text text;
+	Text m_text;
 
 public:
-	TextButtonWidget(FontManager& fontManager_, FRect rect_, SDL_Color color_, std::function<void()> callback_, std::string text_, std::string fontFile_, float textSize_)
-	    : ButtonWidgetBase(rect_, color_, callback_), text(fontManager_, fontFile_, textSize_, text_) {}
+	TextButtonWidget(WindowContext& context_, std::string styleHandle_, std::string text_, FRect rect_, std::function<void()> callback_)
+	    : ButtonWidgetBase(rect_, styleHandle_, callback_),
+	      m_text(context_.fontManager.value(),
+		         context_.styleSheet.getStyle(styleHandle_).textFontPath.value(),
+		         context_.styleSheet.getStyle(styleHandle_).textFontSize.value(),
+		         text_) {
+		m_text.setColor(context_.styleSheet.getStyle(styleHandle_).textColor.value());
+	}
 
 	void render(WindowContext& context) override {
 		WidgetBase::render(context);
-		text.render(m_rect.topLeft());
+		m_text.render(m_rect.topLeft());
 	}
+
+public:
+	struct TextButtonStyle : ButtonWidgetBase::ButtonWidgetStyle {
+		std::optional<std::string> textFontPath;
+		std::optional<float> textFontSize;
+		std::optional<SDL_Color> textColor;
+	};
 };
 
 } // namespace uii

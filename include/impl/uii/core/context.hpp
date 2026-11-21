@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "impl/uii/core/styleSheet.hpp"
 #include "renderer.hpp"
 #include "text.hpp"
 #include "input.hpp"
@@ -16,5 +17,7 @@ struct WindowContext {
 	std::optional<FontManager> fontManager;
 
 	std::optional<InputManager> input;
+
+	StyleSheet styleSheet;
 };
 } // namespace uii

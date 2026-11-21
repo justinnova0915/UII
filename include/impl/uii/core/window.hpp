@@ -28,7 +28,7 @@ public:
 		context.fontManager.emplace(context.renderer->getSDLRenderer());
 		if (!context.fontManager.has_value()) throw std::runtime_error("FontManager crashed :(");
 		context.input.emplace();
-		if (!context.fontManager.has_value()) throw std::runtime_error("input crashed nooooooooo");
+		if (!context.input.has_value()) throw std::runtime_error("input crashed nooooooooo");
 	}
 
 	WindowContext& getContext() {
