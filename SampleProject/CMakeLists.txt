@@ -40,11 +40,44 @@ tx_set_compile_flags(TXProject PRIVATE)
 # build
 set_target_properties(TXProject PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    BUILD_RPATH "$ORIGIN"
 )
 
 # executable environment
 include("${CMakeUtils}/link_dir_to_bin.cmake")
 tx_link_dir_to_bin(TXProject "${CMAKE_SOURCE_DIR}/assets")
+
+# release packaging
+find_package(SDL3 REQUIRED)
+find_package(SDL3_ttf REQUIRED)
+
+set(RELEASE_STAGE_DIR "${CMAKE_BINARY_DIR}/release_pkg")
+
+add_custom_target(release_zip
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "${RELEASE_STAGE_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${RELEASE_STAGE_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:TXProject>"
+        "${RELEASE_STAGE_DIR}/TXProject"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:SDL3::SDL3>"
+        "${RELEASE_STAGE_DIR}/$<TARGET_SONAME_FILE_NAME:SDL3::SDL3>"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:SDL3_ttf::SDL3_ttf>"
+        "${RELEASE_STAGE_DIR}/$<TARGET_SONAME_FILE_NAME:SDL3_ttf::SDL3_ttf>"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/assets"
+        "${RELEASE_STAGE_DIR}/assets"
+    COMMAND ${CMAKE_COMMAND} -E chdir "${RELEASE_STAGE_DIR}"
+        ${CMAKE_COMMAND} -E tar "cf" "${CMAKE_BINARY_DIR}/UII-Demo-linux-x86_64.zip" --format=zip --
+        TXProject
+        "$<TARGET_SONAME_FILE_NAME:SDL3::SDL3>"
+        "$<TARGET_SONAME_FILE_NAME:SDL3_ttf::SDL3_ttf>"
+        assets
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+    DEPENDS TXProject
+    COMMENT "Creating demo release zip with bundled SDL3 libraries"
+)
 
 install(TARGETS TXProject
     RUNTIME DESTINATION bin
