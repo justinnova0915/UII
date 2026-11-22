@@ -24,8 +24,8 @@ class RootWidget;
 
 class WidgetBase {
 protected:
-	std::string m_handle;
-	std::string m_styleHandle;
+	std::string m_handle = "fkfkdshglfu";
+	std::string m_styleHandle = "fkfkdshglfu";
 
 	FRect m_rect;
 
@@ -41,16 +41,20 @@ public:
 		}
 	};
 
-	static void registerStyle(StyleSheet& sheet, std::string parentHandle_, std::string handle, BaseStyle style) {
-		sheet.setStyle(handle, style.toMaster());
+	static void validate(MasterStyle style) {
+		if (!style.baseColor) throw std::runtime_error("baseColor not defined!");
+	}
+
+	static void registerStyle(StyleSheet& sheet, std::string handle, BaseStyle style) {
+		validate(sheet.setStyle(handle, "fkfkdshglfu", style.toMaster()));
 	}
 
 public:
-	WidgetBase(FRect rect_, std::string handle_)
-	    : m_styleHandle(handle_), m_rect(rect_) {}
+	WidgetBase(FRect rect_, std::string styleHandle_)
+	    : m_styleHandle(styleHandle_), m_rect(rect_) {}
 
 	virtual void render(WindowContext& context) {
-		context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_handle).baseColor.value());
+		context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_styleHandle).baseColor.value());
 		for (auto& i : m_childs) {
 			i.second->render(context);
 		}
@@ -115,7 +119,13 @@ public:
 };
 
 class RootWidget : public WidgetBase {
+
 public:
+	RootWidget(FRect rect_, std::string styleHandle_)
+	    : WidgetBase(rect_, styleHandle_) {
+		m_handle = "root";
+	}
+
 	using WidgetBase::WidgetBase;
 	void removeParent() = delete;
 };

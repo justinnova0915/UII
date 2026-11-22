@@ -22,7 +22,8 @@ private:
 
 public:
 	Window(float WINDOW_WIDTH_, float WINDOW_HEIGHT_)
-	    : root({ 0, 0, WINDOW_WIDTH_, WINDOW_HEIGHT_ }, { 0, 0, 0, 0 }) {
+	    : root({ 0, 0, WINDOW_WIDTH_, WINDOW_HEIGHT_ }, "rootStyle") {
+		WidgetBase::registerStyle(context.styleSheet, "rootStyle", { SDL_Color{ 0, 0, 0, 255 } });
 		context.renderer.emplace(WINDOW_WIDTH_, WINDOW_HEIGHT_);
 		if (!context.renderer.has_value()) throw std::runtime_error("Renderer did NOT init 😭😭😭");
 		context.fontManager.emplace(context.renderer->getSDLRenderer());

@@ -5,6 +5,7 @@
 #include "impl/uii/core/context.hpp"
 #include "impl/uii/core/core.hpp"
 #include "impl/uii/core/input.hpp"
+#include "impl/uii/core/styleSheet.hpp"
 #include "impl/uii/core/text.hpp"
 #include "impl/uii/core/widget_base.hpp"
 
@@ -23,14 +24,23 @@ private:
 	std::function<void()> m_callBack;
 
 public:
-	ButtonWidgetBase(FRect rect_, std::string stringHandle_, std::function<void()> callback_)
-	    : WidgetBase(rect_, stringHandle_), m_callBack(callback_) {}
+	ButtonWidgetBase(FRect rect_, std::string styleHandle_, std::function<void()> callback_)
+	    : WidgetBase(rect_, styleHandle_), m_callBack(callback_) {}
 
 	void update(WindowContext& context) override {
 		if (isHovered(context)) {
+
 			if (context.input->isMousePressed(InputManager::MouseButtons::LEFT)) {
 				onPressed();
 			}
+		}
+	}
+
+	void render(WindowContext& context) override {
+		if (isHovered(context)) {
+			context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_styleHandle).hoverColor.value());
+		} else {
+			context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_styleHandle).baseColor.value());
 		}
 	}
 
@@ -57,12 +67,18 @@ public:
 
 class ButtonWidget : public ButtonWidgetBase {
 public:
-	ButtonWidget(FRect rect_, std::string stringHandle_, std::function<void()> callback_)
-	    : ButtonWidgetBase(rect_, stringHandle_, callback_) {}
+	ButtonWidget(FRect rect_, std::string styleHandle_, std::function<void()> callback_)
+	    : ButtonWidgetBase(rect_, styleHandle_, callback_) {}
 
 public:
-	static void registerStyle(StyleSheet& sheet, std::string handle, ButtonWidgetStyle style) {
-		sheet.setStyle(handle, style.toMaster());
+	static void validate(MasterStyle style) {
+		WidgetBase::validate(style);
+		if (!style.hoverColor) throw std::runtime_error("hoverColor not defined!");
+	}
+
+	static void registerStyle(StyleSheet& sheet, std::string handle, std::string parentHandle, ButtonWidgetStyle style) {
+		MasterStyle resolved = style.toMaster();
+		validate(sheet.setStyle(handle, parentHandle, resolved));
 	}
 };
 
@@ -81,7 +97,7 @@ public:
 	}
 
 	void render(WindowContext& context) override {
-		WidgetBase::render(context);
+		ButtonWidgetBase::render(context);
 		m_text.render(m_rect.topLeft());
 	}
 
@@ -90,7 +106,28 @@ public:
 		std::optional<std::string> textFontPath;
 		std::optional<float> textFontSize;
 		std::optional<SDL_Color> textColor;
+
+		MasterStyle toMaster() {
+			MasterStyle baseStyle = ButtonWidgetBase::ButtonWidgetStyle::toMaster();
+			baseStyle.textFontPath = textFontPath;
+			baseStyle.textFontSize = textFontSize;
+			baseStyle.textColor = textColor;
+
+			return baseStyle;
+		}
 	};
+
+	static void validate(MasterStyle style) {
+		ButtonWidget::validate(style);
+
+		if (!style.textFontPath) throw std::runtime_error("textFontPath not defined!");
+		if (!style.textFontSize) throw std::runtime_error("textFontSize not defined!");
+		if (!style.textColor) throw std::runtime_error("textColor not defined!");
+	}
+
+	static void registerStyle(StyleSheet& sheet, std::string handle, std::string parentHandle, TextButtonStyle style) {
+		validate(sheet.setStyle(handle, parentHandle, style.toMaster()));
+	}
 };
 
 } // namespace uii

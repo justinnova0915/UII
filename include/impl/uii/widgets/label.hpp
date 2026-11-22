@@ -46,7 +46,7 @@ public:
 		std::optional<SDL_Color> textColor;
 
 		MasterStyle toMaster() {
-			MasterStyle baseStyle = BaseStyle::toMaster();
+			MasterStyle baseStyle = WidgetBase::BaseStyle::toMaster();
 			baseStyle.textFontPath = textFontPath;
 			baseStyle.textFontSize = textFontSize;
 			baseStyle.textColor = textColor;
@@ -55,9 +55,17 @@ public:
 		}
 	};
 
+	static void validate(MasterStyle style) {
+		WidgetBase::validate(style);
 
-	static void registerStyle(StyleSheet& sheet, std::string handle, LabelStyle style) {
-		sheet.setStyle(handle, style.toMaster());
+		if (!style.textFontPath) throw std::runtime_error("textFontPath not defined!");
+		if (!style.textFontSize) throw std::runtime_error("textFontSize not defined!");
+		if (!style.textColor) throw std::runtime_error("textColor not defined!");
+	}
+
+
+	static void registerStyle(StyleSheet& sheet, std::string parentHandle, std::string handle, LabelStyle style) {
+		validate(sheet.setStyle(handle, parentHandle, style.toMaster()));
 	}
 };
 } // namespace uii
