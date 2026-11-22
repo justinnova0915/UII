@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"name": "SampleProject",
+			"path": "SampleProject"
+		},
+		{
+			"name": "UII",
+			"path": "."
+		},
+		{
+			"name": "TXLib",
+			"path": "/home/Justin/Documents/TXLib"
+		}
+	],
+	"settings": {
+		"cmake.sourceDirectory": "${workspaceFolder:SampleProject}"
+  }
+}
+
