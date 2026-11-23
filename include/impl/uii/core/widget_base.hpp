@@ -33,6 +33,9 @@ protected:
 	std::unordered_map<std::string, WidgetBase*> m_childs;
 
 public:
+	struct StyleSheet {};
+
+public:
 	struct BaseStyle {
 		std::optional<SDL_Color> baseColor;
 
@@ -45,7 +48,7 @@ public:
 		if (!style.baseColor) throw std::runtime_error("baseColor not defined!");
 	}
 
-	static void registerStyle(StyleSheet& sheet, std::string handle, BaseStyle style) {
+	static void registerStyle(uii::StyleSheet& sheet, std::string handle, BaseStyle style) {
 		validate(sheet.setStyle(handle, "fkfkdshglfu", style.toMaster()));
 	}
 
