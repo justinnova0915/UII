@@ -11,16 +11,15 @@ namespace uii {
 class LabelWidget : public WidgetBase {
 private:
 	Text m_text;
-	std::string m_styleHandle;
 
 public:
-	LabelWidget(FRect rect_, WindowContext& context_, std::string text_, std::string styleHandle_)
-	    : WidgetBase(rect_, styleHandle_),
+	LabelWidget(FRect rect_, WindowContext& context_, std::string text_, StyleID styleID_)
+	    : WidgetBase(rect_, styleID_),
 	      m_text(context_.fontManager.value(),
-		         context_.styleSheet.getStyle(styleHandle_).textFontPath.value(),
-		         context_.styleSheet.getStyle(styleHandle_).textFontSize.value(),
+		         context_.styleSheet.getStyle(styleID_).textFontPath.value(),
+		         context_.styleSheet.getStyle(styleID_).textFontSize.value(),
 		         text_) {
-		m_text.setColor(context_.styleSheet.getStyle(styleHandle_).textColor.value());
+		m_text.setColor(context_.styleSheet.getStyle(styleID_).textColor.value());
 	}
 
 	void render(WindowContext& context) override {
@@ -64,8 +63,10 @@ public:
 	}
 
 
-	static void registerStyle(StyleSheet& sheet, std::string parentHandle, std::string handle, LabelStyle style) {
-		validate(sheet.setStyle(handle, parentHandle, style.toMaster()));
+	static StyleID registerStyle(StyleSheet& sheet, StyleID parentID, LabelStyle style) {
+		StyleID styleID = sheet.setStyle(parentID, style.toMaster());
+		validate(sheet.getStyle(styleID));
+		return styleID;
 	}
 };
 } // namespace uii

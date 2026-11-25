@@ -9,7 +9,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3/SDL_pixels.h>
-#include <unordered_map>
+#include <vector>
 
 namespace uii {
 
@@ -36,39 +36,39 @@ struct MasterStyle {
 	}
 };
 
+enum class StyleID : int { Invalid = -1 };
+
 class StyleSheet {
 private:
 	struct StyleEntry {
-		std::string parentHandle;
+		StyleID parentHandle;
 		MasterStyle masterStyle;
 	};
 
-	std::unordered_map<std::string, StyleEntry> masterStyle;
+	std::vector<MasterStyle> masterStyle;
 
 
 public:
-	StyleSheet(const StyleSheet&) = delete;
-	StyleSheet() {
-		std::cout << "aa\n";
-	};
-	MasterStyle setStyle(std::string styleName, std::string parentHandle_, MasterStyle style) {
-		MasterStyle result = this->getStyle(parentHandle_);
+	StyleID setStyle(StyleID parentID, MasterStyle style) {
+		MasterStyle result = this->getStyle(parentID);
 		result.mergeWith(style);
 
-		masterStyle.insert({ styleName, { parentHandle_, result } });
-		return result;
+		masterStyle.push_back(result);
+		return StyleID{ static_cast<StyleID>(masterStyle.size() - 1) };
 	}
 
-	MasterStyle getStyle(std::string handle) {
-		if (handle == "fkfkdshglfu") {
+	MasterStyle getStyle(StyleID handle) {
+		if (handle == StyleID::Invalid) {
 			return MasterStyle{};
 		}
 
-		if (masterStyle.find(handle) == masterStyle.end()) {
-			throw std::runtime_error(std::format("Specified style \"{}\" doesn't exist!", handle));
+		int handleInt = static_cast<int>(handle);
+
+		if (handleInt > masterStyle.size()) {
+			throw std::runtime_error(std::format("Specified style \"{}\" doesn't exist!", handleInt));
 		}
 
-		return masterStyle.find(handle)->second.masterStyle;
+		return masterStyle[handleInt];
 	}
 };
 } // namespace uii

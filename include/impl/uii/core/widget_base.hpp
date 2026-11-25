@@ -25,15 +25,12 @@ class RootWidget;
 class WidgetBase {
 protected:
 	std::string m_handle = "fkfkdshglfu";
-	std::string m_styleHandle = "fkfkdshglfu";
+	StyleID m_styleID;
 
 	FRect m_rect;
 
 	WidgetBase* m_parent = nullptr;
 	std::unordered_map<std::string, WidgetBase*> m_childs;
-
-	// public:
-	// 	struct StyleSheet {};
 
 public:
 	struct BaseStyle {
@@ -48,16 +45,18 @@ public:
 		if (!style.baseColor) throw std::runtime_error("baseColor not defined!");
 	}
 
-	static void registerStyle(StyleSheet& sheet, std::string handle, BaseStyle style) {
-		validate(sheet.setStyle(handle, "fkfkdshglfu", style.toMaster()));
+	static StyleID registerStyle(StyleSheet& sheet, BaseStyle style) {
+		StyleID styleID = sheet.setStyle(StyleID::Invalid, style.toMaster());
+		validate(sheet.getStyle(styleID));
+		return styleID;
 	}
 
 public:
-	WidgetBase(FRect rect_, std::string styleHandle_)
-	    : m_styleHandle(styleHandle_), m_rect(rect_) {}
+	WidgetBase(FRect rect_, StyleID styleID_)
+	    : m_styleID(styleID_), m_rect(rect_) {}
 
 	virtual void render(WindowContext& context) {
-		context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_styleHandle).baseColor.value());
+		context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_styleID).baseColor.value());
 		for (auto& i : m_childs) {
 			i.second->render(context);
 		}
@@ -124,8 +123,8 @@ public:
 class RootWidget : public WidgetBase {
 
 public:
-	RootWidget(FRect rect_, std::string styleHandle_)
-	    : WidgetBase(rect_, styleHandle_) {
+	RootWidget(FRect rect_, StyleID styleID_)
+	    : WidgetBase(rect_, styleID_) {
 		m_handle = "root";
 	}
 

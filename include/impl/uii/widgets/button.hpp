@@ -24,8 +24,8 @@ private:
 	std::function<void()> m_callBack;
 
 public:
-	ButtonWidgetBase(FRect rect_, std::string styleHandle_, std::function<void()> callback_)
-	    : WidgetBase(rect_, styleHandle_), m_callBack(callback_) {}
+	ButtonWidgetBase(FRect rect_, StyleID styleID, std::function<void()> callback_)
+	    : WidgetBase(rect_, styleID), m_callBack(callback_) {}
 
 	void update(WindowContext& context) override {
 		if (isHovered(context)) {
@@ -38,9 +38,9 @@ public:
 
 	void render(WindowContext& context) override {
 		if (isHovered(context)) {
-			context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_styleHandle).hoverColor.value());
+			context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_styleID).hoverColor.value());
 		} else {
-			context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_styleHandle).baseColor.value());
+			context.renderer->renderRect(m_rect, context.styleSheet.getStyle(m_styleID).baseColor.value());
 		}
 	}
 
@@ -67,8 +67,8 @@ public:
 
 class ButtonWidget : public ButtonWidgetBase {
 public:
-	ButtonWidget(FRect rect_, std::string styleHandle_, std::function<void()> callback_)
-	    : ButtonWidgetBase(rect_, styleHandle_, callback_) {}
+	ButtonWidget(FRect rect_, StyleID styleID, std::function<void()> callback_)
+	    : ButtonWidgetBase(rect_, styleID, callback_) {}
 
 public:
 	static void validate(MasterStyle style) {
@@ -76,9 +76,10 @@ public:
 		if (!style.hoverColor) throw std::runtime_error("hoverColor not defined!");
 	}
 
-	static void registerStyle(StyleSheet& sheet, std::string handle, std::string parentHandle, ButtonWidgetStyle style) {
-		MasterStyle resolved = style.toMaster();
-		validate(sheet.setStyle(handle, parentHandle, resolved));
+	static StyleID registerStyle(StyleSheet& sheet, StyleID parentID, ButtonWidgetStyle style) {
+		StyleID styleID = sheet.setStyle(parentID, style.toMaster());
+		validate(sheet.getStyle(styleID));
+		return styleID;
 	}
 };
 
@@ -87,13 +88,13 @@ private:
 	Text m_text;
 
 public:
-	TextButtonWidget(WindowContext& context_, std::string styleHandle_, std::string text_, FRect rect_, std::function<void()> callback_)
-	    : ButtonWidgetBase(rect_, styleHandle_, callback_),
+	TextButtonWidget(WindowContext& context_, StyleID styleID_, std::string text_, FRect rect_, std::function<void()> callback_)
+	    : ButtonWidgetBase(rect_, styleID_, callback_),
 	      m_text(context_.fontManager.value(),
-		         context_.styleSheet.getStyle(styleHandle_).textFontPath.value(),
-		         context_.styleSheet.getStyle(styleHandle_).textFontSize.value(),
+		         context_.styleSheet.getStyle(styleID_).textFontPath.value(),
+		         context_.styleSheet.getStyle(styleID_).textFontSize.value(),
 		         text_) {
-		m_text.setColor(context_.styleSheet.getStyle(styleHandle_).textColor.value());
+		m_text.setColor(context_.styleSheet.getStyle(styleID_).textColor.value());
 	}
 
 	void render(WindowContext& context) override {
@@ -125,8 +126,10 @@ public:
 		if (!style.textColor) throw std::runtime_error("textColor not defined!");
 	}
 
-	static void registerStyle(StyleSheet& sheet, std::string handle, std::string parentHandle, TextButtonStyle style) {
-		validate(sheet.setStyle(handle, parentHandle, style.toMaster()));
+	static StyleID registerStyle(StyleSheet& sheet, StyleID parentID, TextButtonStyle style) {
+		StyleID styleID = sheet.setStyle(parentID, style.toMaster());
+		validate(sheet.getStyle(styleID));
+		return styleID;
 	}
 };
 

@@ -1,6 +1,7 @@
 // Copyright (c) 2026 UII. Licensed under the GPL-3.0 License.
 
 #pragma once
+#include "impl/uii/core/styleSheet.hpp"
 #include "widget_base.hpp"
 #include "text.hpp"
 #include "renderer.hpp"
@@ -18,12 +19,12 @@ private:
 	// dingle berry
 	WindowContext context;
 
-	RootWidget root;
+	std::optional<RootWidget> root;
 
 public:
-	Window(float WINDOW_WIDTH_, float WINDOW_HEIGHT_)
-	    : root({ 0, 0, WINDOW_WIDTH_, WINDOW_HEIGHT_ }, "rootStyle") {
-		WidgetBase::registerStyle(context.styleSheet, "rootStyle", { SDL_Color{ 0, 0, 0, 255 } });
+	Window(float WINDOW_WIDTH_, float WINDOW_HEIGHT_) {
+		StyleID rootStyleID = WidgetBase::registerStyle(context.styleSheet, { SDL_Color{ 0, 0, 0, 255 } });
+		root.emplace(FRect{ 0, 0, WINDOW_WIDTH_, WINDOW_HEIGHT_ }, rootStyleID);
 		context.renderer.emplace(WINDOW_WIDTH_, WINDOW_HEIGHT_);
 		if (!context.renderer.has_value()) throw std::runtime_error("Renderer did NOT init 😭😭😭");
 		context.fontManager.emplace(context.renderer->getSDLRenderer());
@@ -37,18 +38,18 @@ public:
 	}
 
 	RootWidget& getRootWidget() {
-		return root;
+		return root.value();
 	}
 
 	void render() {
 		context.renderer->clear({ 0, 0, 0, 255 });
-		root.render(context);
+		root->render(context);
 		context.renderer->swap();
 	}
 
 	void update() {
 		context.input->populate();
-		root.update(context);
+		root->update(context);
 	}
 };
 } // namespace uii
